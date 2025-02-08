@@ -2,8 +2,12 @@ import uuid
 import qrcode
 import aiosqlite
 import asyncio
+import nest_asyncio
 from telegram import Update, InputFile
 from telegram.ext import Application, CommandHandler, ContextTypes
+
+# Apply nest_asyncio to prevent event loop errors
+nest_asyncio.apply()
 
 # Telegram Bot Token (Replace with your actual bot token)
 BOT_TOKEN = "7247839166:AAGxuiKewRAeXJB5R2I9cj1SMwLpl29neTo"
@@ -126,8 +130,7 @@ async def show_servers(update: Update, context: ContextTypes.DEFAULT_TYPE):
         available_servers += f"{server.replace('_', ' ').title()}:\n"
         for duration, price in durations.items():
             available_servers += f"  - {duration.replace('_', ' ').title()}: ₹{price}\n"
-
-    available_servers += "\nTo purchase a server, use the command:\n"
+            available_servers += "\nTo purchase a server, use the command:\n"
     available_servers += "/buy <server> <duration> (e.g., /buy magic_server 1_Day)"
 
     await update.message.reply_text(available_servers)
@@ -193,11 +196,11 @@ async def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("buy", process_buy))
     app.add_handler(CommandHandler("verify", verify))
-    app.add_handler(CommandHandler("buy", show_servers))  # Handles cases where no arguments are given to `/buy`
+    app.add_handler(CommandHandler("buy", show_servers))  # Handles /buy without arguments
 
     print("Bot is running...")
-    
     await app.run_polling()
 
-if __name__ == "__main__":
-    asyncio.run(main())
+
+if name == "main":
+    asyncio.get_event_loop().run_until_complete(main())
